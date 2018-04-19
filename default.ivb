@@ -1,0 +1,106 @@
+Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr)
+
+'   Edit paths below if your installation locations differ.
+'
+'   You can delete functions for programs you don't use and they won't
+'   appear in the list of choices.
+'
+'   STL files are saved to c:\temp - change the location if you wish
+
+
+Public Sub Export_To_Simplify3D()
+    Call ExportToSlicer("C:\Program Files\Simplify3D\Simplify3D.exe")
+End Sub
+
+Public Sub Export_To_Slic3r()
+    Call ExportToSlicer("C:\Program Files\Prusa3D\Slic3rPE\slic3r.exe")
+End Sub
+
+Public Sub Export_To_Cura()
+    Call ExportToSlicer("C:\Program Files\Ultimaker Cura 3.2\Cura.exe")
+End Sub
+
+
+Private Sub ExportToSlicer(slicerPath As String)
+    Dim stlPath As String
+
+    stlPath = "C:\temp\"
+
+    Dim StlFileName As String
+
+'   Get the STL translator Add-In.
+    Dim oSTLTranslator As TranslatorAddIn
+    Set oSTLTranslator = ThisApplication.ApplicationAddIns.ItemById("{533E9A98-FC3B-11D4-8E7E-0010B541CD80}")
+    If oSTLTranslator Is Nothing Then
+        MsgBox "Could not access STL translator."
+        Exit Sub
+    End If
+
+    Dim oDoc As PartDocument
+    Set oDoc = ThisApplication.ActiveDocument
+    If oDoc Is Nothing Then
+        MsgBox "No open part found"
+        Exit Sub
+    End If
+
+    If Len(oDoc.FullFileName) = 0 Then
+        Debug.Print "oDoc.FullFileName is blank"
+        MsgBox "Please save file, then rerun"
+        Exit Sub
+    End If
+
+    Dim Extension As String
+
+    StlFileName = oDoc.DisplayName
+    Extension = Mid(StlFileName, InStrRev(StlFileName, "."))
+    StlFileName = Replace(StlFileName, Extension, ".stl")
+
+    Dim oContext As TranslationContext
+    Set oContext = ThisApplication.TransientObjects.CreateTranslationContext
+
+    Dim oOptions As NameValueMap
+    Set oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+
+    If oSTLTranslator.HasSaveCopyAsOptions(oDoc, oContext, oOptions) Then
+
+        Dim resolution As String
+
+'       If you don't want to choose your STL resolution every time comment out this
+'       line and uncomment the one below it. Resolution values are as follows:
+'           2 = Low,  1 = Medium,  0 = High
+        resolution = InputBox("0 = High" & Chr(13) & "1 = Medium" & Chr(13) & "2 = Low", "STL File Resolution", 1)
+'        resolution = 1
+
+
+        oOptions.Value("Resolution") = CInt(resolution)
+
+'       Set output file type:
+'       0 - binary,  1 - ASCII
+        oOptions.Value("OutputFileType") = 0
+
+'       Units
+'       5 = Millimeter, 4 = inches
+        oOptions.Value("ExportUnits") = 5
+
+        oContext.Type = kFileBrowseIOMechanism
+
+        Dim oData As DataMedium
+        Set oData = ThisApplication.TransientObjects.CreateDataMedium
+        oData.FileName = stlPath & StlFileName
+
+        Call oSTLTranslator.SaveCopyAs(oDoc, oContext, oOptions, oData)
+        Sleep (1000)
+        Call Open_Slicer(slicerPath, Chr(&H22) & oData.FileName & Chr(&H22))
+    Else
+        MsgBox "File doesn't have 'save copy as' option"
+        Exit Sub
+    End If
+
+End Sub
+
+Private Sub Open_Slicer(s3dPath As String, stlPath As String)
+    Dim sFullPathToExecutable As String
+
+    sFullPathToExecutable = s3dPath & Chr(&H20) & stlPath
+    Shell sFullPathToExecutable
+End Sub
