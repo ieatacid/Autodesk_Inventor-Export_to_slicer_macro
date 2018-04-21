@@ -8,15 +8,15 @@ Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr
 '   STL files are saved to c:\temp - change the location if you wish
 
 
-Public Sub Export_To_Simplify3D()
+Public Sub Simplify3D()
     Call ExportToSlicer("C:\Program Files\Simplify3D\Simplify3D.exe")
 End Sub
 
-Public Sub Export_To_Slic3r()
+Public Sub Slic3r()
     Call ExportToSlicer("C:\Program Files\Prusa3D\Slic3rPE\slic3r.exe")
 End Sub
 
-Public Sub Export_To_Cura()
+Public Sub Cura()
     Call ExportToSlicer("C:\Program Files\Ultimaker Cura 3.2\Cura.exe")
 End Sub
 
