@@ -13,6 +13,13 @@ Public Sub Simplify3D()
 End Sub
 
 Public Sub Slic3r()
+'   If you want to use Slic3rPE as configured for the MK3, uncomment the
+'   next 'Call' line and comment out the one below it. If you want it configured
+'   for a different Prusa printer just check the program shortcut for the
+'   proper command line arguments and edit below -- it should be similar
+'   to the 'settings MK3 214' at the end of the line below.
+
+'    Call ExportToSlicer(Chr(34) & "C:\Program Files\Prusa3D\Slic3rPE\slic3r.exe" & Chr(34) & " --DataDir " & Chr(34) & "C:\Users\Public\Documents\Prusa3D\Slic3r settings MK3 214" & Chr(34))
     Call ExportToSlicer("C:\Program Files\Prusa3D\Slic3rPE\slic3r.exe")
 End Sub
 
