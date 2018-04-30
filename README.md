@@ -1,5 +1,5 @@
 
-* Open Default.ivb in the text editor of your choice
+* Open default.ivb in the text editor of your choice
 * Select all and copy
 * In Inventor go to `Tools -> VBA Editor` and paste into Default.ivb
 * Take note of the location of Default.ivb and put the icons in the same folder
